@@ -1,0 +1,17 @@
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+.vs/
+
+# User secrets and local settings (contains sensitive data)
+appsettings.Development.json
+appsettings.Local.json
+**/appsettings.*.json
+!appsettings.json
+
+# Environment variables (do not commit)
+.env
+.env.local
+.env.production
