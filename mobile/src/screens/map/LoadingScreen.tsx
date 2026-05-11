@@ -1,0 +1,25 @@
+import { Center } from "@/components/ui/center";
+import { Spinner } from "@/components/ui/spinner";
+import { Text } from "@/components/ui/text";
+import { VStack } from "@/components/ui/vstack";
+import { StatusBar } from "expo-status-bar";
+import { View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+export default function LoadingScreen() {
+  return (
+    <View className="flex-1 bg-white">
+      <StatusBar style="dark" />
+      <SafeAreaView className="flex-1">
+        <Center className="flex-1">
+          <VStack className="items-center gap-4">
+            <Spinner size="large" />
+            <Text className="text-base text-gray-600">
+              Loading rain data...
+            </Text>
+          </VStack>
+        </Center>
+      </SafeAreaView>
+    </View>
+  );
+}
