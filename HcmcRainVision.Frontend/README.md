@@ -1,1 +1,0 @@
-# HcmcRainVision.Frontend
