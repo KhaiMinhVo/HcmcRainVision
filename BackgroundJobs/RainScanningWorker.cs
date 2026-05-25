@@ -156,13 +156,13 @@ namespace HcmcRainVision.Backend.BackgroundJobs
                         
                         _logger.LogInformation($"✅ Hoàn thành Job #{jobId}");
                         
-                        // SỬA LỖI HIỆU NĂNG: Chỉ Cleanup 1 lần mỗi ngày
-                        if (DateTime.UtcNow.Day != _lastCleanupTime.Day)
+                        // Tự động cleanup mỗi 10 phút
+                        if ((DateTime.UtcNow - _lastCleanupTime).TotalMinutes >= 10)
                         {
                             await CleanupOldImagesAsync();
                             await CleanupOldDataAsync(db, stoppingToken);
                             _lastCleanupTime = DateTime.UtcNow;
-                            _logger.LogInformation("🧹 Đã chạy cleanup hàng ngày.");
+                            _logger.LogInformation("🧹 Đã chạy cleanup (chạy mỗi 10 phút).");
                         }
                     }
                 }
@@ -600,12 +600,29 @@ namespace HcmcRainVision.Backend.BackgroundJobs
                     cutoffDate
                 );
 
+                // Giữ lại 30 dòng mới nhất trong bảng camera_status_logs
                 await db.Database.ExecuteSqlRawAsync(
-                    "DELETE FROM camera_status_logs WHERE checked_at < {0}",
-                    cutoffDate
+                    @"DELETE FROM camera_status_logs 
+                      WHERE status_log_id NOT IN (
+                          SELECT status_log_id 
+                          FROM camera_status_logs 
+                          ORDER BY checked_at DESC 
+                          LIMIT 30
+                      );"
                 );
 
-                _logger.LogInformation("🧹 Đã dọn dẹp dữ liệu cũ hơn 7 ngày.");
+                // Giữ lại 30 dòng mới nhất trong bảng weather_logs
+                await db.Database.ExecuteSqlRawAsync(
+                    @"DELETE FROM weather_logs 
+                      WHERE ""Id"" NOT IN (
+                          SELECT ""Id"" 
+                          FROM weather_logs 
+                          ORDER BY ""Timestamp"" DESC 
+                          LIMIT 30
+                      );"
+                );
+
+                _logger.LogInformation("🧹 Đã dọn dẹp dữ liệu cũ hơn 7 ngày và giữ lại 30 dòng mới nhất của camera_status_logs và weather_logs.");
             }
             catch (Exception ex)
             {
