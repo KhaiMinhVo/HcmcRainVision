@@ -120,9 +120,8 @@ namespace HcmcRainVision.Backend.BackgroundJobs
 
                         _logger.LogInformation($"Đã tải {activeSubscriptions.Count} subscriptions từ {subsByWard.Count} phường.");
 
-                        // Xử lý song song (Max 3 camera cùng lúc để tránh quá tải database)
-                        // Giảm từ 5 xuống 3 để tránh timeout khi có nhiều camera cùng lúc
-                        var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 3, CancellationToken = stoppingToken };
+                        // Xử lý song song (Giảm xuống 1 để tránh lỗi Out of Memory trên máy chủ 512MB RAM của Render)
+                        var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 1, CancellationToken = stoppingToken };
 
                         // Thêm timeout cho toàn bộ parallel processing (15 phút)
                         using var parallelCts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
