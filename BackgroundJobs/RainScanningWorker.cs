@@ -156,14 +156,11 @@ namespace HcmcRainVision.Backend.BackgroundJobs
                         
                         _logger.LogInformation($"✅ Hoàn thành Job #{jobId}");
                         
-                        // Tự động cleanup mỗi 10 phút
-                        if ((DateTime.UtcNow - _lastCleanupTime).TotalMinutes >= 10)
-                        {
-                            await CleanupOldImagesAsync();
-                            await CleanupOldDataAsync(db, stoppingToken);
-                            _lastCleanupTime = DateTime.UtcNow;
-                            _logger.LogInformation("🧹 Đã chạy cleanup (chạy mỗi 10 phút).");
-                        }
+                        // Chạy cleanup liên tục sau mỗi chu kỳ scan
+                        await CleanupOldImagesAsync();
+                        await CleanupOldDataAsync(db, stoppingToken);
+                        _lastCleanupTime = DateTime.UtcNow;
+                        _logger.LogInformation("🧹 Đã chạy cleanup (chạy liên tục sau mỗi chu kỳ).");
                     }
                 }
                 catch (OperationCanceledException)
