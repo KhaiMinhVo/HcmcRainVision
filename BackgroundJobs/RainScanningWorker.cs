@@ -35,8 +35,16 @@ namespace HcmcRainVision.Backend.BackgroundJobs
 
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
-            // 1. Dọn dẹp các Job bị treo do lần tắt server trước
-            await ResetStuckJobsAsync();
+            try
+            {
+                // 1. Dọn dẹp các Job bị treo do lần tắt server trước
+                await ResetStuckJobsAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi dọn dẹp Jobs cũ (Có thể do Database chưa phản hồi). Bỏ qua để Server tiếp tục khởi động.");
+            }
+            
             await base.StartAsync(cancellationToken);
         }
 
