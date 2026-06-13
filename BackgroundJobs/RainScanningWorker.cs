@@ -604,26 +604,18 @@ namespace HcmcRainVision.Backend.BackgroundJobs
                     cutoffDate
                 );
 
-                // Giữ lại 30 dòng mới nhất trong bảng camera_status_logs
+                var weatherCutoffDate = DateTime.UtcNow.AddHours(-24);
+
+                // Xóa trạng thái camera cũ hơn 24 giờ (đủ thời gian để Chatbot và Admin xem log)
                 await db.Database.ExecuteSqlRawAsync(
-                    @"DELETE FROM camera_status_logs 
-                      WHERE status_log_id NOT IN (
-                          SELECT status_log_id 
-                          FROM camera_status_logs 
-                          ORDER BY checked_at DESC 
-                          LIMIT 30
-                      );"
+                    "DELETE FROM camera_status_logs WHERE checked_at < {0}",
+                    weatherCutoffDate
                 );
 
-                // Giữ lại 30 dòng mới nhất trong bảng weather_logs
+                // Xóa log thời tiết cũ hơn 24 giờ (tiết kiệm không gian lưu trữ mà không làm hỏng dữ liệu bản đồ trong ngày)
                 await db.Database.ExecuteSqlRawAsync(
-                    @"DELETE FROM weather_logs 
-                      WHERE ""Id"" NOT IN (
-                          SELECT ""Id"" 
-                          FROM weather_logs 
-                          ORDER BY ""Timestamp"" DESC 
-                          LIMIT 30
-                      );"
+                    "DELETE FROM weather_logs WHERE \"Timestamp\" < {0}",
+                    weatherCutoffDate
                 );
 
                 _logger.LogInformation("🧹 Đã dọn dẹp dữ liệu cũ hơn 7 ngày và giữ lại 30 dòng mới nhất của camera_status_logs và weather_logs.");
