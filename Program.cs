@@ -213,6 +213,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await dbContext.Database.MigrateAsync();
         await TestDataSeeder.SeedTestData(dbContext);
         logger.LogInformation("✅ Seed test data thành công.");
     }
