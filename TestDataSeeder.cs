@@ -326,7 +326,7 @@ public static class TestDataSeeder
                     Name = "Cộng Hòa - Út Tịch",
                     Latitude = 10.8015, 
                     Longitude = 106.6578,
-                    WardId = "W_TANSONNHAT_C04",
+                    WardId = "W_BENTHANH_C01",
                     Status = nameof(CameraStatus.Active)
                 },
                 new Camera 
@@ -335,7 +335,7 @@ public static class TestDataSeeder
                     Name = "Hậu Giang - Nguyễn Văn Luông (Vòng xoay Phú Lâm)",
                     Latitude = 10.7483, 
                     Longitude = 106.6356,
-                    WardId = "W_PHULAM_C03",
+                    WardId = "W_BENTHANH_C01",
                     Status = nameof(CameraStatus.Active)
                 },
                 new Camera 
