@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Optimize memory for 512MB Render free tier -->
     <ServerGarbageCollection>false</ServerGarbageCollection>
+    <UserSecretsId>45ee458e-6c16-4301-8458-17abe0a590cf</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

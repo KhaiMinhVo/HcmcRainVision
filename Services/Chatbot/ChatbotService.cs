@@ -20,7 +20,7 @@ namespace HcmcRainVision.Backend.Services.Chatbot
         private readonly ILogger<ChatbotService> _logger;
 
         private const string GeminiEndpoint =
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
         public ChatbotService(
             AppDbContext db,
