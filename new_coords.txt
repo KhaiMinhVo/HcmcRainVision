@@ -1,0 +1,56 @@
+﻿Nguyễn Hữu Cảnh - Tôn Đức Thắng	10.7826315	106.7062354
+Nam Kỳ Khởi Nghĩa - Hàm Nghi	10.7709694	106.7011285
+Điện Biên Phủ - Nguyễn Bỉnh Khiêm	10.7920852	106.6997391
+Trần Quang Khải - Trần Nhật Duật	10.7916478	106.6893804
+Đinh Tiên Hoàng - Võ Thị Sáu	10.7917743	106.6957748
+Nguyễn Văn Thủ - Trần Doãn Khanh	10.7886336	106.6977489
+CMT8 - Bùi Thị Xuân	10.7726453	106.6910648
+Võ Văn Kiệt - Cầu Ông Lãnh	10.7637917	106.6976523
+Nguyễn Trãi - Cống Quỳnh	10.7663399	106.6881037
+Trần Hưng Đạo - Nguyễn Cư Trinh	10.7650144	106.6928673
+Nguyễn Đình Chiểu - Cao Thắng	10.7700419	106.6821384
+Cao Thắng - Võ Văn Tần	10.7690723	106.6832757
+Hai Bà Trưng - Nguyễn Hữu Cầu	10.7893714	106.6901207
+Võ Thị Sáu - Bà Huyện Thanh Quan	10.7801864	106.6842628
+Điện Biên Phủ - Trương Định	10.7800125	106.6872936
+Trần Quang Diệu - Trường Sa	10.7845128	106.6784370
+Lê Văn Sỹ - Huỳnh Văn Bánh	10.7918902	106.6714525
+3/2 - Lý Thường Kiệt	10.7636490	106.6599030
+Lý Thường Kiệt - Tô Hiến Thành	10.7704951	106.6583365
+3/2 - Thành Thái	10.7681975	106.6668284
+Lý Thái Tổ - Hồ Thị Kỷ	10.7669643	106.6763449
+Lý Thái Tổ - Sư Vạn Hạnh	10.7677759	106.6714954
+Hùng Vương - Lê Hồng Phong	10.7622529	106.6764414
+3/2 - Cầu vượt Nguyễn Tri Phương	10.7692093	106.6698432
+CMT8 - Hòa Hưng	10.7802233	106.6771442
+3/2 - Lê Hồng Phong	10.7710959	106.6732657
+Nguyễn Thị Minh Khai - Nguyễn Thiện Thuật	10.7664900	106.6824818
+Nam Kỳ Khởi Nghĩa - Nguyễn Thị Minh Khai	10.7797542	106.6950828
+Phạm Văn Đồng - QL13	10.8262720	106.7140138
+Nút giao Thủ Đức - Võ Văn Ngân	10.8492753	106.7737842
+625 Quang Trung	10.8351290	106.6634917
+Quang Trung - Tân Sơn	10.8394388	106.6472161
+Phan Đăng Lưu - Lê Văn Duyệt	10.8019971	106.6964829
+Nơ Trang Long - Chu Văn An	10.8114080	106.6957533
+Phạm Văn Đồng - Phan Văn Trị 2	10.8207659	106.6948092
+Cầu Thị Nghè - Xô Viết Nghệ Tính	10.7927439	106.7074049
+Xô Viết Nghệ Tính - Nguyễn Xí 2	10.8102804	106.7124152
+Đầu Hầm TP Thủ Đức - Hầm Thủ Thiêm	10.7705847	106.7134023
+Võ Nguyên Giáp - Thảo Điền	10.8010117	106.7382771
+Cầu Sài Gòn 8 - Thủ Đức	10.7995521	106.7312282
+Mai Chí Thọ - Xa Lộ Hà Nội (3)	10.8091949	106.7560387
+Tỉnh Lộ 43 - Chân Cầu Gò Dưa	10.8730513	106.7323923
+Phạm Văn Đồng - Tô Ngọc Vân	10.8533953	106.7514628
+Quốc lộ 1 - KCX Linh Trung 2	10.8735570	106.7655015
+Quốc Lộ 1 - KCX Linh Trung 1	10.8720819	106.7687416
+Phạm Văn Đồng - Đào Trinh Nhất	10.8650647	106.7590427
+Lê Văn Việt - Man Thiện	10.8452343	106.7867070
+Ngã Tư Thủ Đức - Lê Văn Việt	10.8490751	106.7742831
+Nguyễn Xiển - Nguyễn Văn Tăng	10.8428108	106.8286943
+Nguyễn Duy Trinh - Lã Xuân Oai	10.8055486	106.8171608
+Đồng Văn Cống - Phan Văn Đáng	10.7785053	106.7572618
+Đồng Văn Cống - Nguyễn Thị Định	10.7731722	106.7702866
+Nguyễn Duy Trinh - Đỗ Xuân Hợp	10.7904358	106.7816162
+Nguyễn Duy Trinh - Bưng Ông Thoàn	10.7912052	106.7968941
+Đỗ Xuân Hợp - Dương Đình Hội	10.8167088	106.7742777
+Võ Nguyên Giáp - Tây Hòa 1	10.8264933	106.7610329

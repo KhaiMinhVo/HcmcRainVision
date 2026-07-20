@@ -557,34 +557,34 @@ public static class TestDataSeeder
         // Coordinates from ArcGIS geocoding (validated coordinates from Google Maps-aligned intersections)
         var cluster1CoordinateMap = new Dictionary<string, (double Lat, double Lon)>
         {
-            { "CAM_GT_662b85bf1afb9c00172dd149", (10.7896463, 106.7110733) },
-            { "CAM_GT_58af994abd82540010390c37", (10.7752395, 106.6993105) },
-            { "CAM_GT_662b857b1afb9c00172dd106", (10.7992510, 106.7086262) },
-            { "CAM_GT_662b82a61afb9c00172dcdfd", (10.7941252, 106.6933816) },
-            { "CAM_GT_5a823e425058170011f6eaa4", (10.780938, 106.688113) },
-            { "CAM_GT_662b80721afb9c00172dcb28", (10.783141, 106.725334) },
-            { "CAM_GT_662b7ce71afb9c00172dc676", (10.7711437, 106.6894327) },
-            { "CAM_GT_56de42f611f398ec0c481288", (10.7639164, 106.6981783) },
-            { "CAM_GT_63195512c9eae60017a1c279", (10.7704753, 106.6920711) },
-            { "CAM_GT_662b811d1afb9c00172dcc1d", (10.7588163, 106.6872751) },
-            { "CAM_GT_6623e3ea6f998a001b2522ae", (10.7681435, 106.6816726) },
-            { "CAM_GT_63ae75f9bfd3d90017e8f097", (10.7737164, 106.6295629) },
+            { "CAM_GT_662b85bf1afb9c00172dd149", (10.7826315, 106.7062354) },
+            { "CAM_GT_58af994abd82540010390c37", (10.7709694, 106.7011285) },
+            { "CAM_GT_662b857b1afb9c00172dd106", (10.7920852, 106.6997391) },
+            { "CAM_GT_662b82a61afb9c00172dcdfd", (10.7916478, 106.6893804) },
+            { "CAM_GT_5a823e425058170011f6eaa4", (10.7917743, 106.6957748) },
+            { "CAM_GT_662b80721afb9c00172dcb28", (10.7886336, 106.6977489) },
+            { "CAM_GT_662b7ce71afb9c00172dc676", (10.7726453, 106.6910648) },
+            { "CAM_GT_56de42f611f398ec0c481288", (10.7637917, 106.6976523) },
+            { "CAM_GT_63195512c9eae60017a1c279", (10.7663399, 106.6881037) },
+            { "CAM_GT_662b811d1afb9c00172dcc1d", (10.7650144, 106.6928673) },
+            { "CAM_GT_6623e3ea6f998a001b2522ae", (10.7700419, 106.6821384) },
+            { "CAM_GT_63ae75f9bfd3d90017e8f097", (10.7690723, 106.6832757) },
             { "CAM_GT_662b82da1afb9c00172dce94", (10.780938, 106.688113) },
-            { "CAM_GT_5deb576d1dc17d7c5515acfb", (10.7763645, 106.6889029) },
-            { "CAM_GT_5deb576d1dc17d7c5515acfc", (10.7992510, 106.7086262) },
-            { "CAM_GT_6623e5776f998a001b252337", (10.7901116, 106.6802649) },
-            { "CAM_GT_5d8cd4ee766c880017188946", (10.7941935, 106.6822919) },
-            { "CAM_GT_5deb576d1dc17d7c5515ad23", (10.7791315, 106.6559763) },
-            { "CAM_GT_63ae7c53bfd3d90017e8f3d8", (10.7823769, 106.6700049) },
-            { "CAM_GT_66b1c34d779f74001867409e", (10.4, 106.93333) },
-            { "CAM_GT_6623e6b86f998a001b2523b8", (10.7665194, 106.6780171) },
-            { "CAM_GT_6623e7076f998a001b2523ea", (10.86785, 106.613) },
-            { "CAM_GT_66b1c158779f740018673eb4", (10.7623969, 106.6765036) },
-            { "CAM_GT_6623e7526f998a001b252407", (10.7676864, 106.6670970) },
-            { "CAM_GT_631955e7c9eae60017a1c30a", (10.7807464, 106.6763326) },
-            { "CAM_GT_63ae7a08bfd3d90017e8f285", (10.8006915, 106.6078275) },
-            { "CAM_GT_56de42f611f398ec0c481284", (10.7668841, 106.6774396) },
-            { "CAM_GT_58af8eb2bd82540010390c30", (10.7894684, 106.7037653) }
+            { "CAM_GT_5deb576d1dc17d7c5515acfb", (10.7801864, 106.6842628) },
+            { "CAM_GT_5deb576d1dc17d7c5515acfc", (10.7800125, 106.6872936) },
+            { "CAM_GT_6623e5776f998a001b252337", (10.7845128, 106.6784370) },
+            { "CAM_GT_5d8cd4ee766c880017188946", (10.7918902, 106.6714525) },
+            { "CAM_GT_5deb576d1dc17d7c5515ad23", (10.7636490, 106.6599030) },
+            { "CAM_GT_63ae7c53bfd3d90017e8f3d8", (10.7704951, 106.6583365) },
+            { "CAM_GT_66b1c34d779f74001867409e", (10.7681975, 106.6668284) },
+            { "CAM_GT_6623e6b86f998a001b2523b8", (10.7669643, 106.6763449) },
+            { "CAM_GT_6623e7076f998a001b2523ea", (10.7677759, 106.6714954) },
+            { "CAM_GT_66b1c158779f740018673eb4", (10.7622529, 106.6764414) },
+            { "CAM_GT_6623e7526f998a001b252407", (10.7692093, 106.6698432) },
+            { "CAM_GT_631955e7c9eae60017a1c30a", (10.7802233, 106.6771442) },
+            { "CAM_GT_63ae7a08bfd3d90017e8f285", (10.7710959, 106.6732657) },
+            { "CAM_GT_56de42f611f398ec0c481284", (10.7664900, 106.6824818) },
+            { "CAM_GT_58af8eb2bd82540010390c30", (10.7797542, 106.6950828) }
         };
         
         var insertedCluster1CameraCount = 0;
@@ -736,23 +736,23 @@ public static class TestDataSeeder
         var cluster6CoordinateMap = new Dictionary<string, (double Lat, double Lon)>
         {
             // Phường Hiệp Bình - Phạm Văn Đồng - QL13
-            { "CAM_GT_58affc6017139d0010f35cc8", (10.8159, 106.7265) },
+            { "CAM_GT_58affc6017139d0010f35cc8", (10.8262720, 106.7140138) },
             // Phường Thủ Đức - Nút giao (Võ Văn Ngân)
-            { "CAM_GT_56df8198c062921100c143dd", (10.8035, 106.7422) },
+            { "CAM_GT_56df8198c062921100c143dd", (10.8492753, 106.7737842) },
             // Phường Gò Vấp - 625 Quang Trung
-            { "CAM_GT_662b558c1afb9c00172d8ed2", (10.8164, 106.6931) },
+            { "CAM_GT_662b558c1afb9c00172d8ed2", (10.8351290, 106.6634917) },
             // Phường Thông Tây Hội - Quang Trung - Tân Sơn
-            { "CAM_GT_5a6066608576340017d06617", (10.8085, 106.6913) },
+            { "CAM_GT_5a6066608576340017d06617", (10.8394388, 106.6472161) },
             // Phường Gia Định - Phan Đăng Lưu - Lê Văn Duyệt
-            { "CAM_GT_587ee0ecb807da0011e33d50", (10.7992, 106.7158) },
+            { "CAM_GT_587ee0ecb807da0011e33d50", (10.8019971, 106.6964829) },
             // Phường Bình Thạnh - Nơ Trang Long - Chu Văn An
-            { "CAM_GT_63b66089bfd3d90017eaa4bd", (10.7821, 106.7497) },
+            { "CAM_GT_63b66089bfd3d90017eaa4bd", (10.8114080, 106.6957533) },
             // Phường Bình Lợi Trung - Phạm Văn Đồng - Phan Văn Trị 2
-            { "CAM_GT_58d7c20ac1e33c00112b321c", (10.8111, 106.7335) },
+            { "CAM_GT_58d7c20ac1e33c00112b321c", (10.8207659, 106.6948092) },
             // Phường Thạnh Mỹ Tây - Cầu Thị Nghè (Xô Viết Nghệ Tính - Phan Văn Hân)
-            { "CAM_GT_63b65f8dbfd3d90017eaa434", (10.7945, 106.7510) },
+            { "CAM_GT_63b65f8dbfd3d90017eaa434", (10.7927439, 106.7074049) },
             // Phường Bình Quới - Xô Viết Nghệ Tính - Nguyễn Xí 2
-            { "CAM_GT_5a8254f25058170011f6eac5", (10.8194, 106.7628) }
+            { "CAM_GT_5a8254f25058170011f6eac5", (10.8102804, 106.7124152) }
         };
 
         var insertedCluster6CameraCount = 0;
@@ -914,43 +914,43 @@ public static class TestDataSeeder
         var cluster8CoordinateMap = new Dictionary<string, (double Lat, double Lon)>
         {
             // Phường An Khánh - Đầu hầm TP Thủ Đức - Hầm Thủ Thiêm
-            { "CAM_GT_5990ffdbbec3b90016d2ad2d", (10.8005, 106.7625) },
+            { "CAM_GT_5990ffdbbec3b90016d2ad2d", (10.7705847, 106.7134023) },
             // Phường An Khánh - Võ Nguyên Giáp - Thảo Điền
-            { "CAM_GT_587c782db807da0011e33d3b", (10.8062, 106.7779) },
+            { "CAM_GT_587c782db807da0011e33d3b", (10.8010117, 106.7382771) },
             // Phường An Khánh - Cầu Sài Gòn 8 - Thủ Đức
-            { "CAM_GT_631813ebc9eae60017a196b0", (10.8097, 106.7662) },
+            { "CAM_GT_631813ebc9eae60017a196b0", (10.7995521, 106.7312282) },
             // Phường An Khánh - Mai Chí Thọ - Xa Lộ Hà Nội
-            { "CAM_GT_6623f1996f998a001b252805", (10.8173, 106.7856) },
+            { "CAM_GT_6623f1996f998a001b252805", (10.8091949, 106.7560387) },
             // Phường Tam Bình - Tỉnh lộ 43 - Chân cầu Gò Dưa
-            { "CAM_GT_63b54cffbfd3d90017ea7ad0", (10.8347, 106.7442) },
+            { "CAM_GT_63b54cffbfd3d90017ea7ad0", (10.8730513, 106.7323923) },
             // Phường Tam Bình - Phạm Văn Đồng - Tô Ngọc Vân
-            { "CAM_GT_5d8cd98d766c88001718895a", (10.8283, 106.7401) },
+            { "CAM_GT_5d8cd98d766c88001718895a", (10.8533953, 106.7514628) },
             // Phường Linh Xuân - Quốc Lộ 1 - Ngã Tư Linh Xuân
             { "CAM_GT_587461c1b807da0011e33cc8", (10.8631, 106.7641) },
             // Phường Linh Xuân - Quốc Lộ 1 - KCX Linh Trung 1
-            { "CAM_GT_586e28a0f9fab7001111b0b3", (10.8718, 106.7764) },
+            { "CAM_GT_586e28a0f9fab7001111b0b3", (10.8720819, 106.7687416) },
             // Phường Linh Xuân - Phạm Văn Đồng - Đào Trinh Nhất
-            { "CAM_GT_6623f1f16f998a001b25281f", (10.8720, 106.7413) },
+            { "CAM_GT_6623f1f16f998a001b25281f", (10.8650647, 106.7590427) },
             // Phường Tăng Nhơn Phú - Lê Văn Việt - Man Thiện
-            { "CAM_GT_5ad0679598d8fc001102e274", (10.8852, 106.7673) },
+            { "CAM_GT_5ad0679598d8fc001102e274", (10.8452343, 106.7867070) },
             // Phường Tăng Nhơn Phú - Ngã Tư Thủ Đức - Lê Văn Việt
-            { "CAM_GT_56df8159c062921100c143dc", (10.8708, 106.7748) },
+            { "CAM_GT_56df8159c062921100c143dc", (10.8490751, 106.7742831) },
             // Phường Tăng Nhơn Phú - Nguyễn Xiển - Nguyễn Văn Tăng
-            { "CAM_GT_63b54a9ebfd3d90017ea7911", (10.8764, 106.7907) },
+            { "CAM_GT_63b54a9ebfd3d90017ea7911", (10.8428108, 106.8286943) },
             // Phường Long Trường - Nguyễn Duy Trinh - Lã Xuân Oai
-            { "CAM_GT_63b54938bfd3d90017ea77f6", (10.8951, 106.7851) },
+            { "CAM_GT_63b54938bfd3d90017ea77f6", (10.8055486, 106.8171608) },
             // Phường Cát Lái - Đồng Văn Cống - Phan Văn Đáng
-            { "CAM_GT_56de42f611f398ec0c48129e", (10.9075, 106.8042) },
+            { "CAM_GT_56de42f611f398ec0c48129e", (10.7785053, 106.7572618) },
             // Phường Cát Lái - Đồng Văn Cống - Nguyễn Thị Định
-            { "CAM_GT_56de42f611f398ec0c48129f", (10.9102, 106.8067) },
+            { "CAM_GT_56de42f611f398ec0c48129f", (10.7731722, 106.7702866) },
             // Phường Bình Trưng - Nguyễn Duy Trinh - Đỗ Xuân Hợp
-            { "CAM_GT_63b54968bfd3d90017ea7808", (10.9142, 106.7919) },
+            { "CAM_GT_63b54968bfd3d90017ea7808", (10.7904358, 106.7816162) },
             // Phường Bình Trưng - Nguyễn Duy Trinh - Bưng Ông Thoàn
-            { "CAM_GT_63b54898bfd3d90017ea77ae", (10.9153, 106.8038) },
+            { "CAM_GT_63b54898bfd3d90017ea77ae", (10.7912052, 106.7968941) },
             // Phường Phước Long - Đỗ Xuân Hợp - Dương Đình Hội
-            { "CAM_GT_63b54996bfd3d90017ea781a", (10.9243, 106.8123) },
+            { "CAM_GT_63b54996bfd3d90017ea781a", (10.8167088, 106.7742777) },
             // Phường Phước Long - Võ Nguyên Giáp - Tây Hòa 1
-            { "CAM_GT_56df8274c062921100c143df", (10.9305, 106.8215) }
+            { "CAM_GT_56df8274c062921100c143df", (10.8264933, 106.7610329) }
         };
 
         var insertedCluster8CameraCount = 0;
