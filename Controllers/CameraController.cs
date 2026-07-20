@@ -408,8 +408,8 @@ namespace HcmcRainVision.Backend.Controllers
             return Ok(new { message = "Đã khôi phục stream URL thật cho camera.", cameraId = camera.Id, streamUrl = primaryStream.StreamUrl });
         }
 
-        // 8. Chạy test AI ngay trên 1 camera để demo (Chỉ Admin)
-        [Authorize(Roles = "Admin")]
+        // 8. Chạy test AI ngay trên 1 camera để demo
+        [Authorize(Roles = "Admin,User")]
         [HttpPost("{id}/run-ai-test")]
         public async Task<IActionResult> RunAiTest(string id, [FromBody] RunAiTestRequest? request)
         {
