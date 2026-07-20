@@ -467,8 +467,26 @@ namespace HcmcRainVision.Backend.Controllers
                 testedAtVn = VietnamTime.Now
             });
         }
-    }
+        // 9. Proxy lấy ảnh từ Camera (Frontend HTTPS không thể gọi HTTP trực tiếp do Mixed Content)
+        [HttpGet("{id}/image")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetCameraImage(string id)
+        {
+            var camera = await _context.Cameras
+                .Include(c => c.Streams)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
+            if (camera == null) return NotFound("Không tìm thấy camera.");
+
+            var streamUrl = camera.Streams.FirstOrDefault(s => s.IsPrimary)?.StreamUrl;
+            if (string.IsNullOrEmpty(streamUrl)) return NotFound("Camera chưa được cấu hình luồng ảnh.");
+
+            var imageBytes = await _crawler.FetchImageAsync(streamUrl);
+            if (imageBytes == null) return StatusCode(502, "Không thể lấy ảnh từ server camera gốc.");
+
+            return File(imageBytes, "image/jpeg");
+        }
+    }
     // DTOs for API requests
     public class CreateCameraRequest
     {
