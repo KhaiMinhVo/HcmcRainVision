@@ -79,6 +79,7 @@ builder.Services.AddSingleton<IRoutePlanningService, OsrmRoutePlanningService>()
 builder.Services.AddScoped<IChatbotService, ChatbotService>();
 // 4. Đăng ký Background Worker (Chạy ngầm)
 builder.Services.AddHostedService<RainScanningWorker>();
+builder.Services.AddHostedService<AlwaysRainDemoWorker>();
 
 // 5. Đăng ký AI Service với fallback an toàn khi model ML.NET không khả dụng
 var modelFilePath = Path.Combine(builder.Environment.ContentRootPath, "MLModels", "RainModel.zip");

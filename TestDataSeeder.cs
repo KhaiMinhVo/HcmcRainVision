@@ -1138,8 +1138,39 @@ public static class TestDataSeeder
             Console.WriteLine($"✅ Camera WardId: cập nhật {updatedCameraCount}, làm sạch tham chiếu lỗi {clearedInvalidWardRefCount}.");
         }
 
+        // Camera mưa cố định phục vụ demo so sánh tuyến chính và tuyến tránh mưa.
+        // Vị trí nằm trên tuyến Chợ Bến Thành -> sân bay và cách tuyến thay thế hơn 1 km.
+        var demoRainCamera = await context.Cameras.FindAsync(DemoRainConstants.CameraId);
+        if (demoRainCamera == null)
+        {
+            demoRainCamera = new Camera { Id = DemoRainConstants.CameraId };
+            await context.Cameras.AddAsync(demoRainCamera);
+        }
+
+        demoRainCamera.Name = DemoRainConstants.CameraName;
+        demoRainCamera.Latitude = DemoRainConstants.Latitude;
+        demoRainCamera.Longitude = DemoRainConstants.Longitude;
+        demoRainCamera.WardId = DemoRainConstants.WardId;
+        demoRainCamera.Status = nameof(CameraStatus.Active);
+
+        var demoRainLog = await context.WeatherLogs
+            .Where(item => item.CameraId == DemoRainConstants.CameraId)
+            .OrderByDescending(item => item.Timestamp)
+            .FirstOrDefaultAsync();
+        if (demoRainLog == null)
+        {
+            demoRainLog = new WeatherLog { CameraId = DemoRainConstants.CameraId };
+            await context.WeatherLogs.AddAsync(demoRainLog);
+        }
+
+        demoRainLog.Location = new Point(DemoRainConstants.Longitude, DemoRainConstants.Latitude) { SRID = 4326 };
+        demoRainLog.IsRaining = true;
+        demoRainLog.Confidence = DemoRainConstants.Confidence;
+        demoRainLog.Timestamp = DateTime.UtcNow;
+        await context.SaveChangesAsync();
+
         // 3. Seed WeatherLogs (Nếu chưa có)
-        if (context.WeatherLogs.Any())
+        if (context.WeatherLogs.Any(item => item.CameraId != DemoRainConstants.CameraId))
         {
             Console.WriteLine("✅ Database đã có dữ liệu WeatherLogs, bỏ qua seeding.");
         }
