@@ -10,13 +10,15 @@ namespace RainTrainer
     public static class AutoDownloader
     {
         // 1) Dán token Admin JWT vào đây (không kèm chữ "Bearer")
-        private const string AdminToken = "DAN_TOKEN_CUA_BAN_VAO_DAY";
+        private static readonly string AdminToken = Environment.GetEnvironmentVariable("RAIN_TRAINER_ADMIN_TOKEN") ?? string.Empty;
 
         // 2) API audit data
-        private const string ApiUrl = "https://hcmcrainvision-backend-r84u.onrender.com/api/admin/audit-data";
+        private static readonly string ApiUrl = Environment.GetEnvironmentVariable("RAIN_TRAINER_DATASET_URL")
+            ?? "https://hcmc-rain-vision-api-209847686834.asia-southeast1.run.app/api/admin/training-dataset";
 
         // 3) Thư mục Dataset gốc (chứa 2 thư mục con Rain/NoRain)
-        private const string DatasetFolder = @"D:\Downloads\Dataset";
+        private static readonly string DatasetFolder = Environment.GetEnvironmentVariable("RAIN_TRAINER_DATASET_FOLDER")
+            ?? @"D:\Downloads\HcmcCameraDataset";
 
         public static string GetDatasetFolder() => DatasetFolder;
 
@@ -24,17 +26,13 @@ namespace RainTrainer
         {
             Console.WriteLine("[AutoDownloader] Dang ket noi server de tai audit data...");
 
-            if (string.IsNullOrWhiteSpace(AdminToken) || AdminToken.Contains("DAN_TOKEN", StringComparison.OrdinalIgnoreCase))
+            if (string.IsNullOrWhiteSpace(AdminToken))
             {
                 Console.WriteLine("[AutoDownloader] Chua cau hinh AdminToken. Bo qua buoc tai du lieu.");
                 return;
             }
 
-            if (!Directory.Exists(DatasetFolder))
-            {
-                Console.WriteLine($"[AutoDownloader] DatasetFolder khong ton tai: {DatasetFolder}");
-                return;
-            }
+            Directory.CreateDirectory(DatasetFolder);
 
             using var client = new HttpClient();
             client.Timeout = TimeSpan.FromSeconds(60);
@@ -63,23 +61,25 @@ namespace RainTrainer
                 foreach (var element in document.RootElement.EnumerateArray())
                 {
                     var imageUrl = ReadStringProperty(element, "imageUrl");
-                    var userSaid = ReadStringProperty(element, "userSaid");
-                    var reportId = ReadReportId(element);
+                    var label = ReadStringProperty(element, "label");
+                    var cameraId = ReadStringProperty(element, "cameraId");
+                    var reviewId = ReadId(element, "reviewId");
 
                     if (string.IsNullOrWhiteSpace(imageUrl))
                     {
                         continue;
                     }
 
-                    var targetFolder = string.Equals(userSaid, "Rain", StringComparison.OrdinalIgnoreCase)
-                        ? "Rain"
-                        : "NoRain";
+                    if (!label.Equals("Rain", StringComparison.OrdinalIgnoreCase)
+                        && !label.Equals("NoRain", StringComparison.OrdinalIgnoreCase)) continue;
+                    var targetFolder = label.Equals("Rain", StringComparison.OrdinalIgnoreCase) ? "Rain" : "NoRain";
 
                     var fullDirPath = Path.Combine(DatasetFolder, targetFolder);
                     Directory.CreateDirectory(fullDirPath);
 
-                    var safeId = string.IsNullOrWhiteSpace(reportId) ? Guid.NewGuid().ToString("N") : reportId;
-                    var fileName = $"audit_{safeId}.jpg";
+                    var safeId = string.IsNullOrWhiteSpace(reviewId) ? Guid.NewGuid().ToString("N") : reviewId;
+                    var safeCameraId = string.Concat(cameraId.Select(ch => char.IsLetterOrDigit(ch) || ch == '_' || ch == '-' ? ch : '_'));
+                    var fileName = $"{safeCameraId}__review_{safeId}.jpg";
                     var filePath = Path.Combine(fullDirPath, fileName);
 
                     if (File.Exists(filePath))
@@ -116,9 +116,9 @@ namespace RainTrainer
                 : string.Empty;
         }
 
-        private static string ReadReportId(JsonElement element)
+        private static string ReadId(JsonElement element, string propertyName)
         {
-            if (!element.TryGetProperty("reportId", out var value))
+            if (!element.TryGetProperty(propertyName, out var value))
             {
                 return string.Empty;
             }

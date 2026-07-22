@@ -65,6 +65,12 @@ namespace HcmcRainVision.Backend.Models.Constants
             /// Lưu ngẫu nhiên một phần dự đoán không mưa có confidence cao để tìm false-negative.
             /// </summary>
             public const double HighConfidenceNoRainSampleRate = 0.10;
+
+            /// <summary>Chỉ một prediction mưa có confidence từ ngưỡng này mới được đưa vào voting.</summary>
+            public const double RainDecisionThreshold = 0.80;
+
+            public const int TemporalVoteWindow = 3;
+            public const int TemporalVotesRequired = 2;
         }
 
         /// <summary>

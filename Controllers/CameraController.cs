@@ -442,8 +442,10 @@ namespace HcmcRainVision.Backend.Controllers
                 var weatherLog = new WeatherLog
                 {
                     CameraId = camera.Id,
-                    IsRaining = prediction.IsRaining,
+                    IsRaining = prediction.IsRaining && prediction.Confidence >= AppConstants.AiPrediction.RainDecisionThreshold,
                     Confidence = prediction.Confidence,
+                    RawIsRaining = prediction.IsRaining,
+                    RawConfidence = prediction.Confidence,
                     Timestamp = DateTime.UtcNow,
                     Location = new Point(camera.Longitude, camera.Latitude) { SRID = 4326 }
                 };

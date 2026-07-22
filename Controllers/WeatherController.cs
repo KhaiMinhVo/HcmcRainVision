@@ -65,19 +65,26 @@ namespace HcmcRainVision.Backend.Controllers
             var timeLimit = DateTime.UtcNow.AddMinutes(-30);
 
             var data = await _context.WeatherLogs
-                .Where(x => x.Timestamp >= timeLimit)
+                .Where(x => x.CameraId != null && x.Timestamp >= timeLimit)
                 .OrderByDescending(x => x.Timestamp)
                 .ToListAsync();
 
+            var latestByCamera = data
+                .GroupBy(x => x.CameraId!)
+                .Select(group => group.First())
+                .ToList();
+
             // Chuyển đổi (Map) sang DTO cho Frontend dễ dùng
-            var result = data.Select(x => new 
+            var result = latestByCamera.Select(x => new 
             {
                 Id = x.Id,
                 CameraId = x.CameraId,
                 Latitude = x.Location?.Y ?? 0,  // Y là Vĩ độ
                 Longitude = x.Location?.X ?? 0, // X là Kinh độ
                 IsRaining = x.IsRaining,
+                IsPotentialRain = x.RawIsRaining && !x.IsRaining,
                 Confidence = x.Confidence,
+                Timestamp = x.Timestamp,
                 TimeAgo = GetTimeAgo(x.Timestamp),
                 ImageUrl = x.ImageUrl
             });
@@ -98,7 +105,9 @@ namespace HcmcRainVision.Backend.Controllers
             var timeLimit = DateTime.UtcNow.AddMinutes(-minutes);
 
             var recentLogs = await _context.WeatherLogs
-                .Where(x => x.CameraId != null && x.Timestamp >= timeLimit)
+                .Where(x => x.CameraId != null
+                    && !x.CameraId.StartsWith("CAM_TEST")
+                    && x.Timestamp >= timeLimit)
                 .Select(g => new
                 {
                     g.CameraId,
@@ -133,7 +142,9 @@ namespace HcmcRainVision.Backend.Controllers
             var timeLimit = DateTime.UtcNow.AddMinutes(-minutes);
 
             var recentLogs = await _context.WeatherLogs
-                .Where(x => x.CameraId != null && x.Timestamp >= timeLimit)
+                .Where(x => x.CameraId != null
+                    && !x.CameraId.StartsWith("CAM_TEST")
+                    && x.Timestamp >= timeLimit)
                 .Select(x => new
                 {
                     x.CameraId,
@@ -470,9 +481,15 @@ namespace HcmcRainVision.Backend.Controllers
             // 2. Lấy các điểm đang mưa trong 30 phút qua từ DB
             var timeLimit = DateTime.UtcNow.AddMinutes(-30);
             var rainingLogs = await _context.WeatherLogs
-                .Where(x => x.IsRaining && x.Timestamp >= timeLimit)
-                .Select(x => new { x.Location, x.CameraId })
+                .Where(x => x.CameraId != null && x.Timestamp >= timeLimit)
+                .OrderByDescending(x => x.Timestamp)
+                .Select(x => new { x.Location, x.CameraId, x.IsRaining })
                 .ToListAsync();
+            rainingLogs = rainingLogs
+                .GroupBy(log => log.CameraId)
+                .Select(group => group.First())
+                .Where(log => log.IsRaining)
+                .ToList();
 
             var warnings = new List<object>();
 
@@ -625,14 +642,23 @@ namespace HcmcRainVision.Backend.Controllers
             var timeLimit = DateTime.UtcNow.AddMinutes(-30);
             
             var rainingLogs = await _context.WeatherLogs
-                .Where(x => x.IsRaining && x.Timestamp >= timeLimit && x.Location != null)
+                .Where(x => x.CameraId != null && x.Timestamp >= timeLimit && x.Location != null)
+                .OrderByDescending(x => x.Timestamp)
                 .Select(x => new 
                 {
+                    x.CameraId,
+                    x.IsRaining,
                     Lat = x.Location!.Y,      // Vĩ độ
                     Lng = x.Location!.X,      // Kinh độ
-                    Intensity = x.Confidence  // Độ tin cậy làm cường độ nhiệt
+                    Intensity = 1.0
                 })
                 .ToListAsync();
+
+            rainingLogs = rainingLogs
+                .GroupBy(log => log.CameraId)
+                .Select(group => group.First())
+                .Where(log => log.IsRaining)
+                .ToList();
 
             return Ok(rainingLogs);
         }

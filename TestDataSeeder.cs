@@ -1177,6 +1177,8 @@ public static class TestDataSeeder
         demoRainLog.Location = new Point(DemoRainConstants.Longitude, DemoRainConstants.Latitude) { SRID = 4326 };
         demoRainLog.IsRaining = true;
         demoRainLog.Confidence = DemoRainConstants.Confidence;
+        demoRainLog.RawIsRaining = true;
+        demoRainLog.RawConfidence = DemoRainConstants.Confidence;
         demoRainLog.Timestamp = DateTime.UtcNow;
         await context.SaveChangesAsync();
 

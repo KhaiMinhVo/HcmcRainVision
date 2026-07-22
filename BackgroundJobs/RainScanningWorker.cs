@@ -312,17 +312,26 @@ namespace HcmcRainVision.Backend.BackgroundJobs
                         await db.SaveChangesAsync(token);
                         return;
                     }
-                    bool isRainingNow = prediction.IsRaining;
+                    var rawIsRaining = prediction.IsRaining
+                        && prediction.Confidence >= AppConstants.AiPrediction.RainDecisionThreshold;
+                    var previousRawVotes = await db.WeatherLogs
+                        .Where(log => log.CameraId == stream.CameraId)
+                        .OrderByDescending(log => log.Timestamp)
+                        .Take(AppConstants.AiPrediction.TemporalVoteWindow - 1)
+                        .Select(log => log.RawIsRaining)
+                        .ToListAsync(token);
+                    var rainVotes = previousRawVotes.Count(vote => vote) + (rawIsRaining ? 1 : 0);
+                    var isRainingNow = rainVotes >= AppConstants.AiPrediction.TemporalVotesRequired;
 
                     // 4. ⚡ TỐI ƯU LƯU TRỮ: CHỈ LƯU ẢNH KHI CÓ MƯA HOẶC CONFIDENCE THẤP
                     // Tiết kiệm > 90% dung lượng Cloud/Local storage
                     string? imageUrl = null;
                     
-                    var isNoRainAuditSample = !isRainingNow
+                    var isNoRainAuditSample = !rawIsRaining
                         && prediction.Confidence >= AppConstants.AiPrediction.LowConfidenceThreshold
                         && Random.Shared.NextDouble() < AppConstants.AiPrediction.HighConfidenceNoRainSampleRate;
 
-                    if (isRainingNow
+                    if (rawIsRaining
                         || prediction.Confidence < AppConstants.AiPrediction.LowConfidenceThreshold
                         || isNoRainAuditSample)
                     {
@@ -396,6 +405,8 @@ namespace HcmcRainVision.Backend.BackgroundJobs
                         CameraId = stream.CameraId,
                         IsRaining = isRainingNow,
                         Confidence = prediction.Confidence,
+                        RawIsRaining = rawIsRaining,
+                        RawConfidence = prediction.Confidence,
                         ImageUrl = imageUrl, // Dùng URL từ Cloudinary hoặc Local
                         Timestamp = DateTime.UtcNow,
                         // Lưu ý: Gán Location từ Camera vào WeatherLog

@@ -5,6 +5,8 @@ using HcmcRainVision.Backend.Data;
 using HcmcRainVision.Backend.Models.DTOs;
 using HcmcRainVision.Backend.Models.Enums;
 using HcmcRainVision.Backend.Models.Constants;
+using HcmcRainVision.Backend.Models.Entities;
+using System.Security.Claims;
 
 namespace HcmcRainVision.Backend.Controllers
 {
@@ -18,6 +20,102 @@ namespace HcmcRainVision.Backend.Controllers
         public AdminController(AppDbContext context)
         {
             _context = context;
+        }
+
+        public sealed class TrainingImageReviewRequest
+        {
+            public string Label { get; set; } = string.Empty;
+        }
+
+        [HttpGet("training-images")]
+        public async Task<IActionResult> GetTrainingImages([FromQuery] bool reviewed = false, [FromQuery] int limit = 100)
+        {
+            limit = Math.Clamp(limit, 1, 500);
+            var query = _context.WeatherLogs
+                .AsNoTracking()
+                .Where(log => log.ImageUrl != null && log.CameraId != null);
+
+            if (reviewed)
+                query = query.Where(log => _context.TrainingImageReviews.Any(review => review.WeatherLogId == log.Id));
+            else
+                query = query.Where(log => !_context.TrainingImageReviews.Any(review => review.WeatherLogId == log.Id));
+
+            var rows = await query
+                .OrderByDescending(log => log.Timestamp)
+                .Take(limit)
+                .Select(log => new
+                {
+                    WeatherLogId = log.Id,
+                    log.CameraId,
+                    log.ImageUrl,
+                    log.RawIsRaining,
+                    log.RawConfidence,
+                    log.IsRaining,
+                    log.Timestamp,
+                })
+                .ToListAsync();
+
+            return Ok(rows);
+        }
+
+        [HttpPost("training-images/{weatherLogId:int}/review")]
+        public async Task<IActionResult> ReviewTrainingImage(int weatherLogId, [FromBody] TrainingImageReviewRequest request)
+        {
+            var allowedLabels = new[] { "Rain", "NoRain", "Uncertain", "InvalidImage" };
+            var label = allowedLabels.FirstOrDefault(item => item.Equals(request.Label?.Trim(), StringComparison.OrdinalIgnoreCase));
+            if (label == null) return BadRequest(new { message = $"Label phải là: {string.Join(", ", allowedLabels)}" });
+
+            var weatherLogExists = await _context.WeatherLogs.AnyAsync(log => log.Id == weatherLogId && log.ImageUrl != null);
+            if (!weatherLogExists) return NotFound(new { message = "Không tìm thấy ảnh training." });
+
+            var review = await _context.TrainingImageReviews.SingleOrDefaultAsync(item => item.WeatherLogId == weatherLogId);
+            if (review == null)
+            {
+                review = new TrainingImageReview { WeatherLogId = weatherLogId };
+                _context.TrainingImageReviews.Add(review);
+            }
+
+            review.Label = label;
+            review.ReviewedAt = DateTime.UtcNow;
+            if (int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var reviewerId))
+                review.ReviewedByUserId = reviewerId;
+
+            await _context.SaveChangesAsync();
+            return Ok(new { review.WeatherLogId, review.Label, review.ReviewedAt });
+        }
+
+        [HttpGet("training-dataset")]
+        public async Task<IActionResult> GetReviewedTrainingDataset([FromQuery] int limit = 5000)
+        {
+            limit = Math.Clamp(limit, 1, 20000);
+            var rows = await _context.TrainingImageReviews
+                .AsNoTracking()
+                .Where(review => (review.Label == "Rain" || review.Label == "NoRain")
+                    && review.WeatherLog.ImageUrl != null)
+                .OrderByDescending(review => review.ReviewedAt)
+                .Take(limit)
+                .Select(review => new
+                {
+                    ReviewId = review.Id,
+                    WeatherLogId = review.WeatherLogId,
+                    review.Label,
+                    ImageUrl = review.WeatherLog.ImageUrl,
+                    review.WeatherLog.CameraId,
+                    review.ReviewedAt,
+                })
+                .ToListAsync();
+
+            var baseUri = $"{Request.Scheme}://{Request.Host}";
+            var result = rows.Select(row => new
+            {
+                row.ReviewId,
+                row.WeatherLogId,
+                row.Label,
+                ImageUrl = row.ImageUrl!.StartsWith("/", StringComparison.Ordinal) ? baseUri + row.ImageUrl : row.ImageUrl,
+                row.CameraId,
+                row.ReviewedAt,
+            });
+            return Ok(result);
         }
 
         // 1. Thống kê hệ thống

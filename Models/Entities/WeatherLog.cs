@@ -17,9 +17,16 @@ namespace HcmcRainVision.Backend.Models.Entities
         /// </summary>
         public Point? Location { get; set; } 
 
-        public bool IsRaining { get; set; } // Kết quả từ AI
+        /// <summary>Kết quả cuối đã được xác nhận bằng voting theo thời gian.</summary>
+        public bool IsRaining { get; set; }
 
-        public float Confidence { get; set; } // Độ tin cậy (0.0 - 1.0)
+        /// <summary>Confidence của prediction thô mới nhất; không phải cường độ mưa.</summary>
+        public float Confidence { get; set; }
+
+        /// <summary>Prediction trực tiếp từ model trước khi temporal voting.</summary>
+        public bool RawIsRaining { get; set; }
+
+        public float RawConfidence { get; set; }
 
         public DateTime Timestamp { get; set; } // Thời điểm ghi nhận
 

@@ -58,6 +58,8 @@ public sealed class AlwaysRainDemoWorker : BackgroundService
         log.Location = new Point(DemoRainConstants.Longitude, DemoRainConstants.Latitude) { SRID = 4326 };
         log.IsRaining = true;
         log.Confidence = DemoRainConstants.Confidence;
+        log.RawIsRaining = true;
+        log.RawConfidence = DemoRainConstants.Confidence;
         log.Timestamp = DateTime.UtcNow;
         await context.SaveChangesAsync(cancellationToken);
     }

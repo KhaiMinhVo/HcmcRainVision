@@ -11,6 +11,7 @@ public class ModelInput
     public byte[] Image { get; set; } = Array.Empty<byte>();
     public string Label { get; set; } = string.Empty;
     public string Source { get; set; } = string.Empty;
+    public string CameraId { get; set; } = string.Empty;
 }
 
 internal sealed record TrainingReport(
@@ -44,9 +45,10 @@ internal static class Program
         var rainCount = images.Count(x => x.Label == "Rain");
         var noRainCount = images.Count(x => x.Label == "NoRain");
         Console.WriteLine($"Rain: {rainCount}; NoRain: {noRainCount}");
-        if (rainCount < 20 || noRainCount < 20)
+        var cameraCount = images.Select(image => image.CameraId).Distinct(StringComparer.OrdinalIgnoreCase).Count();
+        if (rainCount < 100 || noRainCount < 100 || cameraCount < 5)
         {
-            Console.WriteLine("Mỗi nhãn cần tối thiểu 20 ảnh để train/evaluate.");
+            Console.WriteLine("Dataset v2 cần tối thiểu 100 ảnh mỗi nhãn và ít nhất 5 camera khác nhau.");
             return;
         }
 
@@ -118,14 +120,19 @@ internal static class Program
         var validation = new List<ModelInput>();
         var test = new List<ModelInput>();
 
-        foreach (var group in images.GroupBy(x => x.Label))
+        var cameraGroups = images
+            .GroupBy(image => image.CameraId, StringComparer.OrdinalIgnoreCase)
+            .OrderBy(_ => random.Next())
+            .ToList();
+        var trainCameraEnd = Math.Max(1, (int)Math.Floor(cameraGroups.Count * 0.70));
+        var validationCameraEnd = Math.Max(trainCameraEnd + 1, trainCameraEnd + (int)Math.Floor(cameraGroups.Count * 0.15));
+
+        foreach (var group in cameraGroups)
         {
-            var rows = group.OrderBy(_ => random.Next()).ToList();
-            var trainEnd = (int)Math.Floor(rows.Count * 0.70);
-            var validationEnd = trainEnd + (int)Math.Floor(rows.Count * 0.15);
-            train.AddRange(rows[..trainEnd]);
-            validation.AddRange(rows[trainEnd..validationEnd]);
-            test.AddRange(rows[validationEnd..]);
+            var index = cameraGroups.IndexOf(group);
+            if (index < trainCameraEnd) train.AddRange(group);
+            else if (index < validationCameraEnd) validation.AddRange(group);
+            else test.AddRange(group);
         }
         return (train.OrderBy(_ => random.Next()).ToList(), validation, test);
     }
@@ -151,7 +158,9 @@ internal static class Program
                 Console.WriteLine($"Bỏ qua ảnh hỏng: {file}");
                 continue;
             }
-            yield return new ModelInput { Image = normalized, Label = label, Source = file };
+            var fileStem = Path.GetFileNameWithoutExtension(file);
+            var cameraId = fileStem.Contains("__", StringComparison.Ordinal) ? fileStem.Split("__", 2)[0] : fileStem;
+            yield return new ModelInput { Image = normalized, Label = label, Source = file, CameraId = cameraId };
         }
     }
 

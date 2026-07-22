@@ -22,6 +22,7 @@ namespace HcmcRainVision.Backend.Data
         public DbSet<IngestionJob> IngestionJobs { get; set; }
         public DbSet<IngestionAttempt> IngestionAttempts { get; set; }
         public DbSet<AlertSubscription> AlertSubscriptions { get; set; }
+        public DbSet<TrainingImageReview> TrainingImageReviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -51,6 +52,10 @@ namespace HcmcRainVision.Backend.Data
             modelBuilder.Entity<WeatherLog>()
                 .HasIndex(x => new { x.CameraId, x.Timestamp })
                 .HasDatabaseName("ix_weather_logs_camera_timestamp");
+
+            modelBuilder.Entity<TrainingImageReview>()
+                .HasIndex(x => x.WeatherLogId)
+                .IsUnique();
 
             // Index cho IngestionAttempt query performance
             modelBuilder.Entity<IngestionAttempt>()
