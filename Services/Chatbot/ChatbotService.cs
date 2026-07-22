@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using System.Diagnostics;
 using HcmcRainVision.Backend.Data;
 using HcmcRainVision.Backend.Utils;
 using Microsoft.EntityFrameworkCore;
@@ -17,10 +18,12 @@ namespace HcmcRainVision.Backend.Services.Chatbot
         private readonly AppDbContext _db;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly string _apiKey;
+        private readonly string _model;
+        private readonly TimeSpan _requestTimeout;
         private readonly ILogger<ChatbotService> _logger;
 
-        private const string GeminiEndpoint =
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent";
+        private const string GeminiApiBaseUrl =
+            "https://generativelanguage.googleapis.com/v1beta/models";
 
         public ChatbotService(
             AppDbContext db,
@@ -31,12 +34,21 @@ namespace HcmcRainVision.Backend.Services.Chatbot
             _db = db;
             _httpClientFactory = httpClientFactory;
             _apiKey = configuration["Gemini:ApiKey"] ?? string.Empty;
+            _model = configuration["Gemini:Model"] ?? "gemini-3.5-flash";
+            _requestTimeout = TimeSpan.FromSeconds(
+                Math.Clamp(configuration.GetValue("Gemini:TimeoutSeconds", 20), 5, 60));
             _logger = logger;
         }
 
         public async Task<string> GetResponseAsync(string userMessage, CancellationToken cancellationToken = default)
         {
             var rainContext = await BuildRainContextAsync(cancellationToken);
+            if (rainContext.Contains("chưa có dữ liệu mưa mới", StringComparison.OrdinalIgnoreCase) ||
+                rainContext.Contains("không thể lấy dữ liệu mưa", StringComparison.OrdinalIgnoreCase))
+            {
+                return rainContext;
+            }
+
             return await CallGeminiAsync(userMessage, rainContext, cancellationToken);
         }
 
@@ -201,18 +213,25 @@ namespace HcmcRainVision.Backend.Services.Chatbot
                 generationConfig = new
                 {
                     maxOutputTokens = 400,
-                    temperature = 0.2
+                    temperature = 0.2,
+                    thinkingConfig = new
+                    {
+                        thinkingLevel = "minimal",
+                        includeThoughts = false
+                    }
                 }
             };
 
             var json = JsonSerializer.Serialize(requestBody);
             var client = _httpClientFactory.CreateClient();
-            client.Timeout = TimeSpan.FromSeconds(20);
+            client.Timeout = _requestTimeout;
+            client.DefaultRequestHeaders.Add("x-goog-api-key", _apiKey);
+            var stopwatch = Stopwatch.StartNew();
 
             try
             {
                 var response = await client.PostAsync(
-                    $"{GeminiEndpoint}?key={_apiKey}",
+                    $"{GeminiApiBaseUrl}/{Uri.EscapeDataString(_model)}:generateContent",
                     new StringContent(json, Encoding.UTF8, "application/json"),
                     cancellationToken);
 
@@ -225,18 +244,40 @@ namespace HcmcRainVision.Backend.Services.Chatbot
                 }
 
                 using var doc = JsonDocument.Parse(responseBody);
-                var text = doc.RootElement
-                    .GetProperty("candidates")[0]
-                    .GetProperty("content")
-                    .GetProperty("parts")[0]
-                    .GetProperty("text")
-                    .GetString();
+                if (!doc.RootElement.TryGetProperty("candidates", out var candidates) ||
+                    candidates.GetArrayLength() == 0 ||
+                    !candidates[0].TryGetProperty("content", out var content) ||
+                    !content.TryGetProperty("parts", out var parts))
+                {
+                    _logger.LogWarning("Gemini returned no answer after {ElapsedMs} ms: {Body}",
+                        stopwatch.ElapsedMilliseconds, responseBody);
+                    return "Không có phản hồi từ trợ lý AI.";
+                }
 
-                return text ?? "Không có phản hồi từ trợ lý AI.";
+                var answerParts = new List<string>();
+                foreach (var part in parts.EnumerateArray())
+                {
+                    var isThought = part.TryGetProperty("thought", out var thought) && thought.GetBoolean();
+                    if (!isThought && part.TryGetProperty("text", out var textElement))
+                    {
+                        var value = textElement.GetString();
+                        if (!string.IsNullOrWhiteSpace(value))
+                            answerParts.Add(value.Trim());
+                    }
+                }
+
+                var text = string.Join("\n", answerParts);
+                _logger.LogInformation("Gemini responded in {ElapsedMs} ms", stopwatch.ElapsedMilliseconds);
+                return string.IsNullOrWhiteSpace(text) ? "Không có phản hồi từ trợ lý AI." : text;
             }
-            catch (TaskCanceledException)
+            catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
             {
+                _logger.LogWarning("Gemini timed out after {ElapsedMs} ms", stopwatch.ElapsedMilliseconds);
                 return "Trợ lý AI phản hồi quá chậm. Vui lòng thử lại.";
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
             }
             catch (Exception ex)
             {
