@@ -1138,8 +1138,19 @@ public static class TestDataSeeder
             Console.WriteLine($"✅ Camera WardId: cập nhật {updatedCameraCount}, làm sạch tham chiếu lỗi {clearedInvalidWardRefCount}.");
         }
 
-        // Camera mưa cố định phục vụ demo so sánh tuyến chính và tuyến tránh mưa.
-        // Vị trí nằm trên tuyến Chợ Bến Thành -> sân bay và cách tuyến thay thế hơn 1 km.
+        // Remove the old standalone demo camera. The existing test camera now
+        // owns the deterministic always-raining observation.
+        var legacyDemoLogs = await context.WeatherLogs
+            .Where(item => item.CameraId == DemoRainConstants.LegacyCameraId)
+            .ToListAsync();
+        if (legacyDemoLogs.Count > 0)
+            context.WeatherLogs.RemoveRange(legacyDemoLogs);
+
+        var legacyDemoCamera = await context.Cameras.FindAsync(DemoRainConstants.LegacyCameraId);
+        if (legacyDemoCamera != null)
+            context.Cameras.Remove(legacyDemoCamera);
+
+        // Camera test luôn mưa để kiểm thử nhất quán trên bản đồ, chatbot và tuyến đường.
         var demoRainCamera = await context.Cameras.FindAsync(DemoRainConstants.CameraId);
         if (demoRainCamera == null)
         {
