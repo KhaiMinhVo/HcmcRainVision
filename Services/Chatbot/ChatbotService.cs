@@ -85,7 +85,15 @@ namespace HcmcRainVision.Backend.Services.Chatbot
                     Ward = c.Ward?.WardName ?? "Không xác định"
                 });
 
-                var matchedLogs = logs
+                // Use only the newest observation per camera. Counting all logs in
+                // the window can mix an old rain result with a newer dry result.
+                var latestLogs = logs
+                    .Where(l => l.CameraId != null)
+                    .GroupBy(l => l.CameraId)
+                    .Select(g => g.OrderByDescending(l => l.Timestamp).First())
+                    .ToList();
+
+                var matchedLogs = latestLogs
                     .Where(l => l.CameraId != null && cameraMap.ContainsKey(l.CameraId))
                     .ToList();
 
@@ -150,6 +158,17 @@ namespace HcmcRainVision.Backend.Services.Chatbot
                     }
                 }
 
+                lines.Add("=== Chi tiết điểm camera có dữ liệu mới ===");
+                foreach (var log in matchedLogs.OrderBy(l => cameraMap[l.CameraId!].District)
+                                               .ThenBy(l => cameraMap[l.CameraId!].Ward))
+                {
+                    var camera = cameras.First(c => c.Id == log.CameraId);
+                    var status = log.IsRaining && log.Confidence >= CONFIDENCE_THRESHOLD
+                        ? "CÓ MƯA"
+                        : "Không mưa";
+                    lines.Add($"- {camera.Name} — {cameraMap[log.CameraId!].Ward} ({cameraMap[log.CameraId!].District}): {status}");
+                }
+
                 return string.Join("\n", lines);
             }
             catch (Exception ex)
@@ -189,7 +208,8 @@ namespace HcmcRainVision.Backend.Services.Chatbot
                 - Chỉ trả lời các câu hỏi liên quan đến thời tiết, mưa tại TP.HCM.
                 - Chỉ sử dụng dữ liệu được cung cấp ở trên, không đoán mò hoặc dùng kiến thức ngoài.
                 - Khi người dùng hỏi tên quận/huyện cũ, hãy ánh xạ sang tên khu vực mới theo bảng ở trên rồi mới tra dữ liệu.
-                - Nếu không có dữ liệu về khu vực được hỏi, nói rõ "không có dữ liệu cho khu vực này".
+                - Nếu điểm/camera cụ thể không có dữ liệu nhưng phường hoặc cụm của nó có dữ liệu, phải nói rõ điểm đó chưa có dữ liệu rồi cung cấp trạng thái của khu vực rộng hơn. Không được kết luận toàn bộ câu hỏi là "không có dữ liệu".
+                - Chỉ nói "không có dữ liệu cho khu vực này" khi cả điểm cụ thể lẫn phường/cụm liên quan đều không có dữ liệu.
                 - Trả lời bằng tiếng Việt, ngắn gọn (tối đa 3-4 câu).
                 - Không trả lời câu hỏi ngoài phạm vi thời tiết TP.HCM.
                 - Khi được hỏi về tuyến đường, hãy đề cập tình trạng mưa các khu vực nằm dọc tuyến đó.
