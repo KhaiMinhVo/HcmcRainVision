@@ -50,6 +50,7 @@ namespace HcmcRainVision.Backend.Controllers
         public async Task<IActionResult> GetAuditData()
         {
             var reports = await _context.UserReports
+                .Where(r => r.IsVerifiedByLocation || r.IsFlaggedForRetrain)
                 .OrderByDescending(r => r.Timestamp)
                 .Take(100) // Lấy 100 báo cáo mới nhất
                 .ToListAsync();
@@ -70,7 +71,7 @@ namespace HcmcRainVision.Backend.Controllers
                     .OrderBy(w => Math.Abs((w.Timestamp - report.Timestamp).Ticks))
                     .FirstOrDefault();
 
-                if (relevantLog != null)
+                if (relevantLog != null && !string.IsNullOrWhiteSpace(relevantLog.ImageUrl))
                 {
                     result.Add(new
                     {

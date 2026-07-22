@@ -218,7 +218,7 @@ namespace HcmcRainVision.Backend.Controllers
             byte[] processedBytes = imagePreProcessor.ProcessForAI(rawBytes) ?? rawBytes;
             var result = aiService.Predict(processedBytes);
 
-            if (!string.IsNullOrEmpty(result.Message) && result.Message.StartsWith("Error", StringComparison.OrdinalIgnoreCase))
+            if (!result.IsAvailable)
             {
                 return StatusCode(500, new
                 {

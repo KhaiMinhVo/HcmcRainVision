@@ -38,6 +38,7 @@ namespace HcmcRainVision.Backend.Services.AI
 
                 return new RainPredictionResult
                 {
+                    IsAvailable = true,
                     IsRaining = isRaining,
                     Confidence = maxScore,
                     Message = "AI Prediction"
@@ -48,6 +49,7 @@ namespace HcmcRainVision.Backend.Services.AI
                 _logger.LogError(ex, "Lỗi khi dự đoán với AI Model");
                 return new RainPredictionResult 
                 { 
+                    IsAvailable = false,
                     IsRaining = false, 
                     Confidence = 0, 
                     Message = $"Error: {ex.GetType().Name}" 

@@ -98,12 +98,12 @@ if (canUseMlModel)
     {
         builder.Logging.AddConsole();
         Console.WriteLine($"⚠️ Không thể khởi tạo ML model, fallback sang mock: {ex.Message}");
-        builder.Services.AddScoped<IRainPredictionService, MockRainPredictionService>();
+        builder.Services.AddScoped<IRainPredictionService, UnavailableRainPredictionService>();
     }
 }
 else
 {
-    builder.Services.AddScoped<IRainPredictionService, MockRainPredictionService>();
+    builder.Services.AddScoped<IRainPredictionService, UnavailableRainPredictionService>();
 }
 
 // 6. Đăng ký Email Service

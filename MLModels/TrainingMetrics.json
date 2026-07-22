@@ -1,0 +1,23 @@
+{
+  "TrainedAtUtc": "2026-07-22T15:01:11.9262692Z",
+  "TrainCount": 804,
+  "ValidationCount": 171,
+  "TestCount": 175,
+  "MicroAccuracy": 0.9714285714285714,
+  "MacroAccuracy": 0.9715909090909092,
+  "LogLoss": 0.13491056371447468,
+  "Labels": [
+    "NoRain",
+    "Rain"
+  ],
+  "ConfusionMatrix": [
+    [
+      87,
+      0
+    ],
+    [
+      5,
+      83
+    ]
+  ]
+}

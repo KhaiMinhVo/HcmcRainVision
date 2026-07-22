@@ -303,13 +303,28 @@ namespace HcmcRainVision.Backend.BackgroundJobs
                     
                     // 3. AI Dự báo (Sử dụng ảnh đã xử lý để tăng độ chính xác)
                     var prediction = aiService.Predict(processedImageBytes);
+                    if (!prediction.IsAvailable)
+                    {
+                        _logger.LogError("AI model không khả dụng; bỏ qua camera {CameraId} để tránh lưu dự đoán giả.", stream.CameraId);
+                        attempt.Status = nameof(AttemptStatus.Failed);
+                        attempt.ErrorMessage = prediction.Message ?? "AI model unavailable";
+                        db.IngestionAttempts.Add(attempt);
+                        await db.SaveChangesAsync(token);
+                        return;
+                    }
                     bool isRainingNow = prediction.IsRaining;
 
                     // 4. ⚡ TỐI ƯU LƯU TRỮ: CHỈ LƯU ẢNH KHI CÓ MƯA HOẶC CONFIDENCE THẤP
                     // Tiết kiệm > 90% dung lượng Cloud/Local storage
                     string? imageUrl = null;
                     
-                    if (isRainingNow || prediction.Confidence < AppConstants.AiPrediction.LowConfidenceThreshold)
+                    var isNoRainAuditSample = !isRainingNow
+                        && prediction.Confidence >= AppConstants.AiPrediction.LowConfidenceThreshold
+                        && Random.Shared.NextDouble() < AppConstants.AiPrediction.HighConfidenceNoRainSampleRate;
+
+                    if (isRainingNow
+                        || prediction.Confidence < AppConstants.AiPrediction.LowConfidenceThreshold
+                        || isNoRainAuditSample)
                     {
                         string fileName = $"{stream.CameraId}_{DateTime.UtcNow.Ticks}.jpg";
                         imageUrl = await cloudService.UploadImageAsync(imageBytes, fileName); // Lưu ảnh GỐC đẹp, không phải ảnh đã resize

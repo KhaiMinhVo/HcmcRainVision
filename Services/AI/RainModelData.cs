@@ -25,6 +25,7 @@ namespace HcmcRainVision.Backend.Services.AI
     // Class DTO đơn giản để trả về cho Worker dùng
     public class RainPredictionResult
     {
+        public bool IsAvailable { get; set; } = true;
         public bool IsRaining { get; set; }
         public float Confidence { get; set; } // 0 -> 100%
         public string? Message { get; set; }

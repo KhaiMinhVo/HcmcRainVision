@@ -60,6 +60,11 @@ namespace HcmcRainVision.Backend.Models.Constants
             /// Nếu < 0.6, AI không chắc chắn -> cần lưu ảnh để review
             /// </summary>
             public const double LowConfidenceThreshold = 0.6;
+
+            /// <summary>
+            /// Lưu ngẫu nhiên một phần dự đoán không mưa có confidence cao để tìm false-negative.
+            /// </summary>
+            public const double HighConfidenceNoRainSampleRate = 0.10;
         }
 
         /// <summary>
