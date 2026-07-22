@@ -20,6 +20,7 @@ namespace HcmcRainVision.Backend.Services.Chatbot
         private readonly string _apiKey;
         private readonly string _model;
         private readonly TimeSpan _requestTimeout;
+        private readonly int _maxOutputTokens;
         private readonly ILogger<ChatbotService> _logger;
 
         private const string GeminiApiBaseUrl =
@@ -34,9 +35,11 @@ namespace HcmcRainVision.Backend.Services.Chatbot
             _db = db;
             _httpClientFactory = httpClientFactory;
             _apiKey = configuration["Gemini:ApiKey"] ?? string.Empty;
-            _model = configuration["Gemini:Model"] ?? "gemini-3.5-flash";
+            _model = configuration["Gemini:Model"] ?? "gemini-3.5-flash-lite";
             _requestTimeout = TimeSpan.FromSeconds(
-                Math.Clamp(configuration.GetValue("Gemini:TimeoutSeconds", 20), 5, 60));
+                Math.Clamp(configuration.GetValue("Gemini:TimeoutSeconds", 45), 5, 90));
+            _maxOutputTokens = Math.Clamp(
+                configuration.GetValue("Gemini:MaxOutputTokens", 2048), 128, 8192);
             _logger = logger;
         }
 
@@ -232,7 +235,7 @@ namespace HcmcRainVision.Backend.Services.Chatbot
                 },
                 generationConfig = new
                 {
-                    maxOutputTokens = 400,
+                    maxOutputTokens = _maxOutputTokens,
                     temperature = 0.2,
                     thinkingConfig = new
                     {
