@@ -57,15 +57,14 @@ namespace HcmcRainVision.Backend.Controllers
         }
 
         // API: GET api/weather/latest
-        // Lấy dữ liệu mới nhất của các camera trong vòng 30 phút qua
+        // Lấy observation mới nhất còn lưu của mỗi camera. Dữ liệu không biến
+        // mất khỏi bản đồ chỉ vì worker tạm ngừng hoặc camera đang offline.
         [HttpGet("latest")]
         public async Task<IActionResult> GetLatestWeather()
         {
-            // Lấy mốc thời gian 30 phút trước
-            var timeLimit = DateTime.UtcNow.AddMinutes(-30);
-
             var data = await _context.WeatherLogs
-                .Where(x => x.CameraId != null && x.Timestamp >= timeLimit)
+                .AsNoTracking()
+                .Where(x => x.CameraId != null)
                 .OrderByDescending(x => x.Timestamp)
                 .ToListAsync();
 

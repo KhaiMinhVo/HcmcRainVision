@@ -273,7 +273,12 @@ namespace HcmcRainVision.Backend.BackgroundJobs
                     // Lấy thông tin camera để check hash cũ
                     var currentCamera = await db.Cameras.FindAsync(new object[] { stream.CameraId }, token);
                     
-                    if (currentCamera != null && currentCamera.LastImageHash == currentHash)
+                    var hasWeatherObservation = await db.WeatherLogs
+                        .AnyAsync(log => log.CameraId == stream.CameraId, token);
+
+                    if (currentCamera != null
+                        && currentCamera.LastImageHash == currentHash
+                        && hasWeatherObservation)
                     {
                         _logger.LogWarning($"📷 Camera {stream.CameraId} ({stream.Camera.Name}) bị treo - ảnh giống hệt lần trước. Bỏ qua xử lý AI.");
                         
@@ -638,13 +643,24 @@ namespace HcmcRainVision.Backend.BackgroundJobs
                     weatherCutoffDate
                 );
 
-                // Xóa log thời tiết cũ hơn 24 giờ (tiết kiệm không gian lưu trữ mà không làm hỏng dữ liệu bản đồ trong ngày)
-                await db.Database.ExecuteSqlRawAsync(
-                    "DELETE FROM weather_logs WHERE \"Timestamp\" < {0}",
-                    weatherCutoffDate
-                );
+                // Xóa lịch sử cũ nhưng luôn giữ observation mới nhất của mỗi
+                // camera để bản đồ vẫn có last-known state khi worker/camera tạm nghỉ.
+                var latestWeatherLogIds = await db.WeatherLogs
+                    .AsNoTracking()
+                    .Where(log => log.CameraId != null)
+                    .GroupBy(log => log.CameraId)
+                    .Select(group => group
+                        .OrderByDescending(log => log.Timestamp)
+                        .Select(log => log.Id)
+                        .First())
+                    .ToListAsync(token);
 
-                _logger.LogInformation("🧹 Đã dọn dẹp dữ liệu cũ hơn 7 ngày và giữ lại 30 dòng mới nhất của camera_status_logs và weather_logs.");
+                await db.WeatherLogs
+                    .Where(log => log.Timestamp < weatherCutoffDate
+                        && !latestWeatherLogIds.Contains(log.Id))
+                    .ExecuteDeleteAsync(token);
+
+                _logger.LogInformation("🧹 Đã dọn lịch sử cũ và giữ observation mới nhất của từng camera.");
             }
             catch (Exception ex)
             {
